@@ -62,12 +62,29 @@ public class TableSizeMetrics {
         }
     }
 
+	/**
+     * Queries PostgreSQL to get the compressed sizes or any additional disk usage information.
+     * Instead of reading from the filesystem, this uses SQL to get relevant metrics.
+     */
     public static Object2LongOpenHashMap<String> getDiskUsageSummary() {
         Object2LongOpenHashMap<String> map = new Object2LongOpenHashMap<>();
-        try {
-            IOUtils.readLines(new InputStreamReader(new ProcessBuilder("bash", "-c", "du -s /postgres/base/16385/*").redirectError(ProcessBuilder.Redirect.INHERIT).start().getInputStream())).forEach(line -> map.addTo(line.split("\t")[1].split("\\.")[0].split("/postgres/")[1], Long.parseLong(line.split("\t")[0]) * 1024L));
-        } catch (Throwable th) {
-            th.printStackTrace();
+        try (Connection connection = Database.getConnection();
+             PreparedStatement stmt = connection.prepareStatement(
+                     "SELECT relname AS name, pg_total_relation_size(C.oid) AS total_size " +
+                             "FROM pg_class C " +
+                             "LEFT JOIN pg_namespace N ON (N.oid = C.relnamespace) " +
+                             "WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast')"
+             );
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String name = rs.getString("name");
+                long totalSize = rs.getLong("total_size");
+                map.put(name, totalSize);
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+            throw new RuntimeException(ex);
         }
         return map;
     }
