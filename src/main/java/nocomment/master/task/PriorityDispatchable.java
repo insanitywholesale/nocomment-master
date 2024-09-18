@@ -1,47 +1,51 @@
 package nocomment.master.task;
 
+import java.util.concurrent.atomic.AtomicLong;
 import nocomment.master.network.Connection;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public abstract class PriorityDispatchable implements Comparable<PriorityDispatchable> {
-    public final int priority;
 
-    private boolean canceled;
+	public final int priority;
 
-    private static final AtomicLong globalSeq = new AtomicLong();
-    private final long seq = globalSeq.incrementAndGet(); // int would overflow after like a month
+	private boolean canceled;
 
-    int heapPosition = -1;
+	private static final AtomicLong globalSeq = new AtomicLong();
 
-    public PriorityDispatchable(int priority) {
-        this.priority = priority;
-    }
+	private final long seq = globalSeq.incrementAndGet(); // int would overflow after like
+															// a month
 
-    public abstract void dispatch(Connection onto);
+	int heapPosition = -1;
 
-    /**
-     * Compare by priority, and tiebreak with seq (order of construction, earlier is lower)
-     */
-    @Override
-    public final int compareTo(PriorityDispatchable t) {
-        if (priority != t.priority) {
-            return Integer.compare(priority, t.priority);
-        }
-        return Long.compare(seq, t.seq);
-    }
+	public PriorityDispatchable(int priority) {
+		this.priority = priority;
+	}
 
-    public void cancel() {
-        canceled = true;
-    }
+	public abstract void dispatch(Connection onto);
 
-    public boolean isCanceled() {
-        return canceled;
-    }
+	/**
+	 * Compare by priority, and tiebreak with seq (order of construction, earlier is
+	 * lower)
+	 */
+	@Override
+	public final int compareTo(PriorityDispatchable t) {
+		if (priority != t.priority) {
+			return Integer.compare(priority, t.priority);
+		}
+		return Long.compare(seq, t.seq);
+	}
 
-    public boolean hasAffinity(Connection connection) {
-        return false;
-    }
+	public void cancel() {
+		canceled = true;
+	}
 
-    public abstract int size();
+	public boolean isCanceled() {
+		return canceled;
+	}
+
+	public boolean hasAffinity(Connection connection) {
+		return false;
+	}
+
+	public abstract int size();
+
 }
