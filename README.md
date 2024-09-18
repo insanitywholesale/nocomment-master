@@ -54,6 +54,10 @@ Figure out `No chat!` error here:
 src/main/java/nocomment/master/util/ChatProcessor.java
 1023:                           System.out.println("No chat!");
 ```
+* Establish a SHITPOST type connection
+```bash
+printf 'c34d05a79be75c0a003ff9bb063883f5fbcb2026293ed21122c62f770f3e78fcfef969ff7186719e2d54c1891a744f3e678d0b485a847198e337b246b9167161 v1\n' | nc localhost 42069
+```
 
 ## Files of import
 

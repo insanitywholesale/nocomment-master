@@ -1,7 +1,9 @@
 package nocomment.master.network;
 
 import io.prometheus.client.Counter;
+import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -54,7 +56,8 @@ public enum NoCommentServer {
 		String recv;
 		try {
 			in = new DataInputStream(s.getInputStream());
-			recv = in.readUTF(); // limits to 65536 so this is fine
+			BufferedReader d = new BufferedReader(new InputStreamReader(in));
+			recv = d.readLine();
 		}
 		catch (IOException ex) {
 			failedHandshakes.inc();
