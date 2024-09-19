@@ -54,9 +54,28 @@ Figure out `No chat!` error here:
 src/main/java/nocomment/master/util/ChatProcessor.java
 1023:                           System.out.println("No chat!");
 ```
-* Establish a SHITPOST type connection
+* Open database shell
 ```bash
-printf 'c34d05a79be75c0a003ff9bb063883f5fbcb2026293ed21122c62f770f3e78fcfef969ff7186719e2d54c1891a744f3e678d0b485a847198e337b246b9167161 v1\n' | nc localhost 42069
+docker exec -it nocom-psql psql -U nocom
+```
+* Add user/player and server
+```sql
+nocom=# INSERT INTO servers (hostname) VALUES ('localhost');
+nocom=# INSERT INTO players (username, uuid) VALUES ('user', gen_random_uuid());
+nocom=# exit
+```
+* Open a socket to the nocom server
+```bash
+nc localhost 42069
+```
+* Establish a SHITPOST type connection (inside `nc`, each line separated by hitting enter)
+```bash
+c34d05a79be75c0a003ff9bb063883f5fbcb2026293ed21122c62f770f3e78fcfef969ff7186719e2d54c1891a744f3e678d0b485a847198e337b246b9167161 v1
+```
+* Specify user and server (inside `nc`, each line separated by hitting enter)
+```bash
+user
+localhost
 ```
 
 ## Files of import

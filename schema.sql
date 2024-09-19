@@ -1,6 +1,6 @@
 CREATE TABLE servers
 (
-    id       SMALLINT PRIMARY KEY, -- NOTE: this is serial, but there is no datatype for SMALLINT SERIAL. so i "made my own" by creating a serial then altering its type to smallint lol
+    id       SERIAL PRIMARY KEY,
     hostname TEXT NOT NULL UNIQUE
 );
 
@@ -85,7 +85,7 @@ CREATE INDEX hits_loc_interesting
 
 CREATE TABLE last_by_server
 (
-    server_id  SMALLINT PRIMARY KEY,
+    server_id  INT PRIMARY KEY,
     created_at BIGINT NOT NULL,
 
     FOREIGN KEY (server_id) REFERENCES servers (id)
@@ -123,7 +123,7 @@ $$
 DECLARE
 BEGIN
     INSERT INTO last_by_server (server_id, created_at)
-    VALUES (NEW.server_id, 0)
+    VALUES (NEW.id, 0)
     ON CONFLICT ON CONSTRAINT last_by_server_pkey DO NOTHING;
     RETURN NEW;
 END;

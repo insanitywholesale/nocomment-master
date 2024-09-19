@@ -2,6 +2,8 @@ package nocomment.master.network;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.Collection;
@@ -15,16 +17,15 @@ public class ShitpostAPI {
 
 	public static void handle(Socket s, DataInputStream in) throws IOException {
 		DataOutputStream out = new DataOutputStream(s.getOutputStream());
-		String username = in.readUTF();
-		String serverName = in.readUTF();
+		BufferedReader d = new BufferedReader(new InputStreamReader(in));
+		String username = d.readLine();
+		System.out.println("username " + username);
+		String serverName = d.readLine();
+		System.out.println("servername " + serverName);
 		if (serverName.endsWith(":25565")) {
 			serverName = serverName.split(":25565")[0];
 		}
-		if (!serverName.equals("2b2t.org")) {
-			out.writeUTF("unsupported lmao");
-			return;
-		}
-		String message = in.readUTF();
+		String message = d.readLine();
 		OptionalInt id = Database.getPlayer(username);
 		if (!id.isPresent()) {
 			out.writeUTF("Unknown username " + username);
